@@ -1,7 +1,12 @@
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { StyleSheet, Text, View } from 'react-native';
+import MyButton from "@/components/MyButton";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import useStorage from '@/hooks/use-storage';
+import { useState } from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 export function HomeScreen() {
+  const [inputText, setInputText] = useState("");
+  const { saveFavorite } = useStorage();
   const colorScheme = useColorScheme();
 
   return (
@@ -12,14 +17,30 @@ export function HomeScreen() {
         alignItems: "center",
       }}
     >
-      <Text style={styles.text}>Edit app/index.tsx to edit this screen. Some more text</Text>
+      <Text style={styles.text}>Enter City!</Text>
+      <TextInput
+        style={styles.inputbox}
+        placeholder="Enter city..."
+        onChangeText={setInputText}
+      ></TextInput>
+      <MyButton
+        buttonText="Get weather!"
+        buttonPress={() => {
+          console.log(inputText);
+        }}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   text: {
-    color: '#fff'
-  }
+    color: "#fff",
+  },
+  inputbox: {
+    color: "#fff",
+    borderColor: "#b4b4b4ff",
+    borderWidth: 2,
+  },
 });
 export default HomeScreen;
