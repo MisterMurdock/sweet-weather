@@ -10,9 +10,12 @@ export function HomeScreen() {
   const { saveFavorite } = useStorage();
   const colorScheme = useColorScheme();
   
-  const { loading, error, weatherAtCurrentLoc, getWeatherAtCurrentLocation, currentPos } = useWeatherCall();
+  const { loading, error, weatherAtCurrentLoc, weatherAtInputLoc,
+     getWeatherAtCurrentLocation, getWeatherAtInputLocation,
+     currentPos } = useWeatherCall();
 
   return (
+    <>
     <View
       style={{
         flex: 1,
@@ -21,20 +24,37 @@ export function HomeScreen() {
         padding: 20,
       }}
     >
-      <Text style={styles.text}>Enter City!</Text>
+      <Text style={styles.text}>Enter City</Text>
       <TextInput
         style={styles.inputbox}
         placeholder="Enter city..."
         onChangeText={setInputText}
       />
+      <Text style={{...styles.text, fontSize: 14, marginBottom: 10}}>
+        (add Country letters for accurate results. ex. London, UK)
+      </Text>
       <MyButton
-        buttonText="Get weather!"
-        buttonPress={getWeatherAtCurrentLocation}
+        buttonText="Search city!"
+        buttonPress={() => getWeatherAtInputLocation(inputText)}
       />
+      {weatherAtInputLoc && (
+        <View style={{ marginTop: 20 }}>
+          <Text style={styles.text}>
+            City: {weatherAtInputLoc.name}
+          </Text>
+          <Text style={styles.text}>
+            Temp: {weatherAtInputLoc.main?.temp}°C
+          </Text>
+          <Text style={styles.text}>
+            Weather: {weatherAtInputLoc.weather?.[0]?.description}
+          </Text>
+        </View>
+      )}
       
-      {/* Debug info */}
+      
+      {/* Debug info
       <Text style={styles.text}>Lat: {currentPos.latitude}</Text>
-      <Text style={styles.text}>Long: {currentPos.longitude}</Text>
+      <Text style={styles.text}>Long: {currentPos.longitude}</Text> */}
       
       {loading && <Text style={styles.text}>Loading weather...</Text>}
       {error && <Text style={{...styles.text, color: 'red'}}>Error: {error}</Text>}
@@ -53,6 +73,11 @@ export function HomeScreen() {
         </View>
       )}
     </View>
+          <MyButton
+        buttonText="Get local weather!"
+        buttonPress={getWeatherAtCurrentLocation}
+      />
+    </>
   );
 }
 
@@ -64,7 +89,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   inputbox: {
-    width: "30%",
+    width: "40%",
     padding: 10,
     borderWidth: 1,
     borderColor: "#ccc",

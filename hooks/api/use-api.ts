@@ -5,6 +5,10 @@ interface CurrentLocation {
   latitude: string;
   longitude: string;
 }
+interface LocationCoords {
+  latitude: number;
+  longitude: number;
+}
 
 interface WeatherData {
   main?: {
@@ -27,6 +31,7 @@ export function useWeatherCall() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [weatherAtCurrentLoc, setWeatherAtCurrentLoc] = useState<WeatherData | null>(null);
+  const [weatherAtInputLoc, setWeatherAtInputLoc] = useState<WeatherData | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -82,8 +87,36 @@ export function useWeatherCall() {
     }
   };
 
+  const getWeatherAtInputLocation = async (city_name: string) => {
+    if (!city_name) {
+      setError("City name is required");
+      return;
+    }
 
-  //https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={API_key}&units=metric
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city_name}&appid=${process.env.EXPO_PUBLIC_WEATHER_API_KEY}&units=metric`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch Weather");
+      }
+
+      const data = await response.json();
+      setWeatherAtCurrentLoc(data);
+      console.log("Fetched Weather:", data);
+    } catch (err) {
+      console.error("Error fetching Weather:", err);
+      setError(err instanceof Error ? err.message : "Failed to fetch weather");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //https://api.openweathermap.org/data/2.5/weather?q=${city_name}&appid=${process.env.EXPO_PUBLIC_WEATHER_API_KEY}&units=metric
   //use this endpoint to find city by name
 
   return {
@@ -91,7 +124,9 @@ export function useWeatherCall() {
     loading,
     error,
     weatherAtCurrentLoc,
+    weatherAtInputLoc,
     getWeatherAtCurrentLocation,
+    getWeatherAtInputLocation,
   };
 }
 
