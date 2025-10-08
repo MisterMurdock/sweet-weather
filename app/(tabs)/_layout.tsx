@@ -1,22 +1,22 @@
+import { SettingsProvider, useSettings } from '@/app/contexts/SettingsContext';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
 
-export function TabLayout() {
-  const colorScheme = useColorScheme();
+function TabLayoutContent() {
+  const { effectiveTheme } = useSettings();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors[effectiveTheme].tint,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#fff',
-          borderTopColor: colorScheme === 'dark' ? '#333' : '#ccc',
+          backgroundColor: effectiveTheme === 'dark' ? '#1a1a1a' : '#fff',
+          borderTopColor: effectiveTheme === 'dark' ? '#333' : '#ccc',
           borderTopWidth: 1,
           height: Platform.OS === 'ios' ? 88 : 60,
         },
@@ -48,4 +48,13 @@ export function TabLayout() {
     </Tabs>
   );
 }
+
+export function TabLayout() {
+  return (
+    <SettingsProvider>
+      <TabLayoutContent />
+    </SettingsProvider>
+  );
+}
+
 export default TabLayout;
