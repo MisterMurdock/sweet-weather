@@ -17,7 +17,10 @@ export function Settings() {
   };
 
   const containerStyle = {
-    ...styles.container,
+    flex: 1,
+    justifyContent: "center" as const,
+    alignItems: "center" as const,
+    padding: 20,
     backgroundColor: effectiveTheme === "dark" ? "#151718" : "#fff",
   };
 
@@ -29,12 +32,15 @@ export function Settings() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={containerStyle}>
+        <Text style={{ ...textStyle, fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
+          Settings
+        </Text>
         <View style={styles.settingRow}>
           <Text style={textStyle}>
-            Temperature Unit: {temperatureUnit === "celsius" ? "Celsius (°C)" : "Fahrenheit (°F)"}
+            Temp Unit: {temperatureUnit === "celsius" ? "Celsius (°C)" : "Fahrenheit (°F)"}
           </Text>
           <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
+            trackColor={{ false: "#767577", true: "#767577" }}
             thumbColor={isFahrenheit ? "#f5dd4b" : "#f4f3f4"}
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleUnitSwitch}
@@ -47,7 +53,7 @@ export function Settings() {
             Theme: {theme === "dark" ? "Dark" : theme === "light" ? "Light" : "System"}
           </Text>
           <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
+            trackColor={{ false: "#767577", true: "#767577" }}
             thumbColor={isDarkMode ? "#f5dd4b" : "#f4f3f4"}
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleThemeSwitch}

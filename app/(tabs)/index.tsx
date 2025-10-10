@@ -1,18 +1,27 @@
 import { useSettings } from "@/app/contexts/SettingsContext";
 import MyButton from "@/components/MyButton";
 import { useWeatherCall } from "@/hooks/api/use-api";
-import useStorage from '@/hooks/use-storage';
-import { useState } from "react";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 export function HomeScreen() {
   const [inputText, setInputText] = useState("");
-  const { saveFavorite } = useStorage();
-  const { effectiveTheme, convertTemperature, getTemperatureSymbol } = useSettings();
+  const [savedMessage, setSavedMessage] = useState("");
+  const { effectiveTheme, convertTemperature, getTemperatureSymbol, saveFavorite } = useSettings();
+  const params = useLocalSearchParams();
   
   const { loading, error, weatherAtCurrentLoc, weatherAtInputLoc,
      getWeatherAtCurrentLocation, getWeatherAtInputLocation,
      currentPos } = useWeatherCall();
+
+  // Handle navigation from Favorites
+  useEffect(() => {
+    if (params.city && typeof params.city === 'string') {
+      setInputText(params.city);
+      getWeatherAtInputLocation(params.city);
+    }
+  }, [params.city]);
 
   // Dynamic styles based on theme
   const containerStyle = {
@@ -53,7 +62,7 @@ export function HomeScreen() {
           buttonPress={() => getWeatherAtInputLocation(inputText)}
         />
         {weatherAtInputLoc && (
-          <View style={{ marginTop: 20 }}>
+          <View style={{ marginTop: 20, alignItems: 'center' }}>
             <Text style={textStyle}>
               City: {weatherAtInputLoc.name}
             </Text>
@@ -63,6 +72,21 @@ export function HomeScreen() {
             <Text style={textStyle}>
               Weather: {weatherAtInputLoc.weather?.[0]?.description}
             </Text>
+            <MyButton
+              buttonText="⭐ Save to Favorites"
+              buttonPress={() => {
+                if (weatherAtInputLoc.name) {
+                  saveFavorite(weatherAtInputLoc.name);
+                  setSavedMessage(`${weatherAtInputLoc.name} saved to favorites!`);
+                  setTimeout(() => setSavedMessage(""), 3000);
+                }
+              }}
+            />
+            {savedMessage && (
+              <Text style={{ ...textStyle, color: '#4caf50', marginTop: 8, fontSize: 14 }}>
+                ✓ {savedMessage}
+              </Text>
+            )}
           </View>
         )}
         

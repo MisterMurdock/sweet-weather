@@ -5,14 +5,21 @@ import { useColorScheme as useSystemColorScheme } from "react-native";
 type Theme = "light" | "dark" | "system";
 type TemperatureUnit = "celsius" | "fahrenheit";
 
+interface Favorite {
+  cityName: string;
+}
+
 interface SettingsContextType {
   theme: Theme;
   temperatureUnit: TemperatureUnit;
   setTheme: (theme: Theme) => void;
   setTemperatureUnit: (unit: TemperatureUnit) => void;
-  effectiveTheme: "light" | "dark"; // The actual theme being used
+  effectiveTheme: "light" | "dark";
   convertTemperature: (tempInCelsius: number) => number;
   getTemperatureSymbol: () => string;
+  favorites: Favorite[];
+  saveFavorite: (cityName: string) => void;
+  removeFavorite: (cityName: string) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -21,6 +28,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useSystemColorScheme();
   const [theme, setThemeState] = useState<Theme>("system");
   const [temperatureUnit, setTemperatureUnitState] = useState<TemperatureUnit>("celsius");
+  const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Determine the effective theme
@@ -33,9 +41,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const [savedTheme, savedUnit] = await Promise.all([
+        const [savedTheme, savedUnit, savedFavorites] = await Promise.all([
           AsyncStorage.getItem("theme"),
           AsyncStorage.getItem("temperatureUnit"),
+          AsyncStorage.getItem("favorites"),
         ]);
 
         if (savedTheme) {
@@ -43,6 +52,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         }
         if (savedUnit) {
           setTemperatureUnitState(savedUnit as TemperatureUnit);
+        }
+        if (savedFavorites) {
+          setFavorites(JSON.parse(savedFavorites));
         }
       } catch (error) {
         console.error("Error loading settings:", error);
@@ -74,6 +86,31 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Save favorite
+  const saveFavorite = (cityName: string) => {
+    setFavorites((current) => {
+      // Prevent duplicates
+      if (current.some((fav) => fav.cityName === cityName)) {
+        return current;
+      }
+      
+      const newFavorites = [...current, { cityName }];
+      AsyncStorage.setItem("favorites", JSON.stringify(newFavorites))
+        .catch((err) => console.error(err));
+      return newFavorites;
+    });
+  };
+
+  // Remove favorite
+  const removeFavorite = (cityName: string) => {
+    setFavorites((current) => {
+      const newFavorites = current.filter((fav) => fav.cityName !== cityName);
+      AsyncStorage.setItem("favorites", JSON.stringify(newFavorites))
+        .catch((err) => console.error(err));
+      return newFavorites;
+    });
+  };
+
   // Convert temperature from Celsius to the selected unit
   const convertTemperature = (tempInCelsius: number): number => {
     if (temperatureUnit === "fahrenheit") {
@@ -102,6 +139,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         effectiveTheme,
         convertTemperature,
         getTemperatureSymbol,
+        favorites,
+        saveFavorite,
+        removeFavorite,
       }}
     >
       {children}
@@ -116,3 +156,4 @@ export function useSettings() {
   }
   return context;
 }
+export default SettingsContext;
