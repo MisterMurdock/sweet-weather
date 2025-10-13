@@ -31,7 +31,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Determine the effective theme
+  // Check if Dark or Light mode should be used
   const effectiveTheme: "light" | "dark" = 
     theme === "system" 
       ? (systemColorScheme ?? "light")

@@ -1,9 +1,13 @@
 import { useSettings } from "@/app/contexts/SettingsContext";
 import MyButton from "@/components/MyButton";
+import WeatherCard from "@/components/WeatherCard";
 import { useWeatherCall } from "@/hooks/api/use-api";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+
+
 
 export function HomeScreen() {
   const [inputText, setInputText] = useState("");
@@ -45,10 +49,16 @@ export function HomeScreen() {
   };
 
   return (
-    <>
-      <View style={containerStyle}>
+          <SafeAreaProvider>
+            <SafeAreaView style={containerStyle}>
+        <Text style={{ ...textStyle, fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
+          SweetWeatherApp
+        </Text>
+        <ScrollView style={{ width: '100%' }} contentContainerStyle={{ alignItems: 'center' }}>
         <Text style={textStyle}>Enter City</Text>
         <TextInput
+          id="city-input"
+          value={inputText}
           style={inputStyle}
           placeholder="Enter city..."
           placeholderTextColor={effectiveTheme === "dark" ? "#888" : "#999"}
@@ -59,29 +69,19 @@ export function HomeScreen() {
         </Text>
         <MyButton
           buttonText="Search city!"
-          buttonPress={() => getWeatherAtInputLocation(inputText)}
+          buttonPress={() => {
+            getWeatherAtInputLocation(inputText);
+            // clear input box
+            setInputText("");
+          }}
         />
         {weatherAtInputLoc && (
           <View style={{ marginTop: 20, alignItems: 'center' }}>
-            <Text style={textStyle}>
-              City: {weatherAtInputLoc.name}
-            </Text>
-            <Text style={textStyle}>
-              Temp: {convertTemperature(weatherAtInputLoc.main?.temp || 0).toFixed(1)}{getTemperatureSymbol()}
-            </Text>
-            <Text style={textStyle}>
-              Weather: {weatherAtInputLoc.weather?.[0]?.description}
-            </Text>
-            <MyButton
-              buttonText="⭐ Save to Favorites"
-              buttonPress={() => {
-                if (weatherAtInputLoc.name) {
-                  saveFavorite(weatherAtInputLoc.name);
-                  setSavedMessage(`${weatherAtInputLoc.name} saved to favorites!`);
-                  setTimeout(() => setSavedMessage(""), 3000);
-                }
-              }}
-            />
+            <WeatherCard weather={{ ...weatherAtInputLoc, title: "Searched Location" }} />
+            <View style={{ height: 1, backgroundColor: effectiveTheme === "dark" ? "#444" : "#ccc", width: '80%', marginVertical: 10 }}></View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+</View>
+
             {savedMessage && (
               <Text style={{ ...textStyle, color: '#4caf50', marginTop: 8, fontSize: 14 }}>
                 ✓ {savedMessage}
@@ -93,25 +93,24 @@ export function HomeScreen() {
         {loading && <Text style={textStyle}>Loading weather...</Text>}
         {error && <Text style={{...textStyle, color: '#ff4444'}}>Error: {error}</Text>}
         
-        {weatherAtCurrentLoc && (
-          <View style={{ marginTop: 20 }}>
-            <Text style={textStyle}>
-              City: {weatherAtCurrentLoc.name}
-            </Text>
-            <Text style={textStyle}>
-              Temp: {convertTemperature(weatherAtCurrentLoc.main?.temp || 0).toFixed(1)}{getTemperatureSymbol()}
-            </Text>
-            <Text style={textStyle}>
-              Weather: {weatherAtCurrentLoc.weather?.[0]?.description}
-            </Text>
+                {weatherAtCurrentLoc && (
+          <View style={{ marginTop: 20, alignItems: 'center' }}>
+            <WeatherCard weather={{ ...weatherAtCurrentLoc, title: "Current Location" }} />
+            <View style={{ height: 1, backgroundColor: effectiveTheme === "dark" ? "#444" : "#ccc", width: '80%', marginVertical: 10 }}></View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+</View>
+
           </View>
         )}
-      </View>
+
+      </ScrollView>
+      </SafeAreaView>
       <MyButton
         buttonText="Get local weather!"
         buttonPress={getWeatherAtCurrentLocation}
       />
-    </>
+    </SafeAreaProvider>
+            
   );
 }
 
