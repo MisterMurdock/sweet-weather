@@ -55,6 +55,11 @@ export default function WeatherCard({ weather }: WeatherCardProps) {
           }
         }}
             />
+      {savedMessage ? (
+        <Text style={{ ...textStyle, fontSize: 14, color: "#4BB543", marginTop: 8 }}>
+          {savedMessage}
+        </Text>
+      ) : null}
     </View>
   );
 }

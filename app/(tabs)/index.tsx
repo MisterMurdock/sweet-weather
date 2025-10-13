@@ -7,21 +7,30 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-
-
 export function HomeScreen() {
   const [inputText, setInputText] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
-  const { effectiveTheme, convertTemperature, getTemperatureSymbol, saveFavorite } = useSettings();
+  const {
+    effectiveTheme,
+    convertTemperature,
+    getTemperatureSymbol,
+    saveFavorite,
+  } = useSettings();
   const params = useLocalSearchParams();
-  
-  const { loading, error, weatherAtCurrentLoc, weatherAtInputLoc,
-     getWeatherAtCurrentLocation, getWeatherAtInputLocation,
-     currentPos } = useWeatherCall();
+
+  const {
+    loading,
+    error,
+    weatherAtCurrentLoc,
+    weatherAtInputLoc,
+    getWeatherAtCurrentLocation,
+    getWeatherAtInputLocation,
+    currentPos,
+  } = useWeatherCall();
 
   // Handle navigation from Favorites
   useEffect(() => {
-    if (params.city && typeof params.city === 'string') {
+    if (params.city && typeof params.city === "string") {
       setInputText(params.city);
       getWeatherAtInputLocation(params.city);
     }
@@ -49,68 +58,90 @@ export function HomeScreen() {
   };
 
   return (
-          <SafeAreaProvider>
-            <SafeAreaView style={containerStyle}>
-        <Text style={{ ...textStyle, fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
+    <SafeAreaProvider>
+      <SafeAreaView style={containerStyle}>
+        <Text
+          style={{
+            ...textStyle,
+            fontSize: 24,
+            fontWeight: "bold",
+            marginBottom: 20,
+          }}
+        >
           SweetWeatherApp
         </Text>
-        <ScrollView style={{ width: '100%' }} contentContainerStyle={{ alignItems: 'center' }}>
-        <Text style={textStyle}>Enter City</Text>
-        <TextInput
-          id="city-input"
-          value={inputText}
-          style={inputStyle}
-          placeholder="Enter city..."
-          placeholderTextColor={effectiveTheme === "dark" ? "#888" : "#999"}
-          onChangeText={setInputText}
-        />
-        <Text style={{...textStyle, fontSize: 14, marginBottom: 10, opacity: 0.7}}>
-          (add Country letters for accurate results. ex. London, UK)
-        </Text>
-        <MyButton
-          buttonText="Search city!"
-          buttonPress={() => {
-            getWeatherAtInputLocation(inputText);
-            // clear input box
-            setInputText("");
-          }}
-        />
-        {weatherAtInputLoc && (
-          <View style={{ marginTop: 20, alignItems: 'center' }}>
-            <WeatherCard weather={{ ...weatherAtInputLoc, title: "Searched Location" }} />
-            <View style={{ height: 1, backgroundColor: effectiveTheme === "dark" ? "#444" : "#ccc", width: '80%', marginVertical: 10 }}></View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-</View>
+        <ScrollView
+          style={{ width: "100%" }}
+          contentContainerStyle={{ alignItems: "center" }}
+        >
+          <Text style={textStyle}>Enter City</Text>
+          <TextInput
+            id="city-input"
+            value={inputText}
+            style={inputStyle}
+            placeholder="Enter city..."
+            placeholderTextColor={effectiveTheme === "dark" ? "#888" : "#999"}
+            onChangeText={setInputText}
+          />
+          <Text
+            style={{
+              ...textStyle,
+              fontSize: 14,
+              marginBottom: 10,
+              opacity: 0.7,
+            }}
+          >
+            (add Country letters for accurate results. ex. London, UK)
+          </Text>
+          <MyButton
+            buttonText="Search city!"
+            buttonPress={() => {
+              getWeatherAtInputLocation(inputText);
+              // clear input box
+              setInputText("");
+            }}
+          />
+          {weatherAtInputLoc && (
+            <View style={{ marginTop: 20, alignItems: "center" }}>
+              <WeatherCard
+                weather={{ ...weatherAtInputLoc, title: "Searched Location" }}
+              />
+              {savedMessage && (
+                <Text
+                  style={{
+                    ...textStyle,
+                    color: "#4caf50",
+                    marginTop: 8,
+                    fontSize: 14,
+                  }}
+                >
+                  ✓ {savedMessage}
+                </Text>
+              )}
+            </View>
+          )}
 
-            {savedMessage && (
-              <Text style={{ ...textStyle, color: '#4caf50', marginTop: 8, fontSize: 14 }}>
-                ✓ {savedMessage}
-              </Text>
-            )}
-          </View>
-        )}
-        
-        {loading && <Text style={textStyle}>Loading weather...</Text>}
-        {error && <Text style={{...textStyle, color: '#ff4444'}}>Error: {error}</Text>}
-        
-                {weatherAtCurrentLoc && (
-          <View style={{ marginTop: 20, alignItems: 'center' }}>
-            <WeatherCard weather={{ ...weatherAtCurrentLoc, title: "Current Location" }} />
-            <View style={{ height: 1, backgroundColor: effectiveTheme === "dark" ? "#444" : "#ccc", width: '80%', marginVertical: 10 }}></View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-</View>
+          {loading && <Text style={textStyle}>Loading weather...</Text>}
+          {error && (
+            <Text style={{ ...textStyle, color: "#ff4444" }}>
+              Error: {error}
+            </Text>
+          )}
 
-          </View>
-        )}
-
-      </ScrollView>
+          {weatherAtCurrentLoc && (
+            <View style={{ marginTop: 20, alignItems: "center" }}>
+              <WeatherCard
+                weather={{ ...weatherAtCurrentLoc, title: "Current Location" }}
+              />
+            </View>
+          )}
+        </ScrollView>
       </SafeAreaView>
       <MyButton
         buttonText="Get local weather!"
         buttonPress={getWeatherAtCurrentLocation}
       />
     </SafeAreaProvider>
-            
   );
 }
 
