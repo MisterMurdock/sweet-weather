@@ -60,16 +60,7 @@ export function HomeScreen() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={containerStyle}>
-        <Text
-          style={{
-            ...textStyle,
-            fontSize: 24,
-            fontWeight: "bold",
-            marginBottom: 20,
-          }}
-        >
-          SweetWeatherApp
-        </Text>
+       
         <ScrollView
           style={{ width: "100%" }}
           contentContainerStyle={{ alignItems: "center" }}
@@ -138,8 +129,17 @@ export function HomeScreen() {
         </ScrollView>
       </SafeAreaView>
       <MyButton
-        buttonText="Get local weather!"
+        buttonText={"Get local " + "\n" + "weather!"}
         buttonPress={getWeatherAtCurrentLocation}
+        style={{
+          marginRight: 20,
+          marginBottom: 10,
+          position: "absolute",
+          bottom: 20,
+          alignSelf: "flex-end",
+          paddingHorizontal: 5,
+          borderRadius: 30,
+      }}
       />
     </SafeAreaProvider>
   );
@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
   },
   inputbox: {
     width: "40%",
+    minWidth: 200,
     padding: 10,
     borderWidth: 1,
     borderRadius: 8,

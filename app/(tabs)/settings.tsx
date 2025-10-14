@@ -63,6 +63,10 @@ export function Settings() {
 
         <Text style={{ ...textStyle, marginTop: 20, fontSize: 12, opacity: 0.7 }}>
           Currently using: {effectiveTheme === "dark" ? "Dark Mode" : "Light Mode"}
+          {"\n"}
+          Current temp unit: {temperatureUnit === "celsius" ? "Celsius (°C)" : "Fahrenheit (°F)"}
+        </Text>
+        <Text style={{ ...textStyle, marginTop: 10, fontSize: 12, opacity: 0.7 }}>
         </Text>
       </SafeAreaView>
     </SafeAreaProvider>
