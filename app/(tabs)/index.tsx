@@ -2,8 +2,8 @@ import { useSettings } from "@/app/contexts/SettingsContext";
 import MyButton from "@/components/MyButton";
 import WeatherCard from "@/components/WeatherCard";
 import { useWeatherCall } from "@/hooks/api/use-api";
-import { useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import React, { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
@@ -29,12 +29,17 @@ export function HomeScreen() {
   } = useWeatherCall();
 
   // Handle navigation from Favorites
-  useEffect(() => {
-    if (params.city && typeof params.city === "string") {
-      setInputText(params.city);
-      getWeatherAtInputLocation(params.city);
-    }
-  }, [params.city]);
+  useFocusEffect(
+    useCallback(() => {
+      if (params.city && typeof params.city === "string") {
+        setInputText(params.city);
+        getWeatherAtInputLocation(params.city);
+
+        // Clear the params after using them
+        router.setParams({ city: undefined });
+      }
+    }, [params.city])
+  );
 
   // Dynamic styles based on theme
   const containerStyle = {
@@ -60,7 +65,6 @@ export function HomeScreen() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={containerStyle}>
-       
         <ScrollView
           style={{ width: "100%" }}
           contentContainerStyle={{ alignItems: "center" }}
@@ -73,6 +77,8 @@ export function HomeScreen() {
             placeholder="Enter city..."
             placeholderTextColor={effectiveTheme === "dark" ? "#888" : "#999"}
             onChangeText={setInputText}
+            onSubmitEditing={() => getWeatherAtInputLocation(inputText)}
+            returnKeyType="search"
           />
           <Text
             style={{
@@ -139,7 +145,7 @@ export function HomeScreen() {
           alignSelf: "flex-end",
           paddingHorizontal: 5,
           borderRadius: 30,
-      }}
+        }}
       />
     </SafeAreaProvider>
   );
