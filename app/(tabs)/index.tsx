@@ -1,7 +1,7 @@
+import { useWeatherCall } from "@/app/api/use-api";
 import { useSettings } from "@/app/contexts/SettingsContext";
 import MyButton from "@/components/MyButton";
 import WeatherCard from "@/components/WeatherCard";
-import { useWeatherCall } from "@/hooks/api/use-api";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
@@ -12,9 +12,6 @@ export function HomeScreen() {
   const [savedMessage, setSavedMessage] = useState("");
   const {
     effectiveTheme,
-    convertTemperature,
-    getTemperatureSymbol,
-    saveFavorite,
   } = useSettings();
   const params = useLocalSearchParams();
 
@@ -25,7 +22,6 @@ export function HomeScreen() {
     weatherAtInputLoc,
     getWeatherAtCurrentLocation,
     getWeatherAtInputLocation,
-    currentPos,
   } = useWeatherCall();
 
   // Handle navigation from Favorites

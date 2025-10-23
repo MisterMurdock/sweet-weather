@@ -45,10 +45,8 @@ export function useWeatherCall() {
           latitude: location.coords.latitude.toString(),
           longitude: location.coords.longitude.toString(),
         });
-        console.log("Latitude:", location.coords.latitude);
-        console.log("Longitude:", location.coords.longitude);
       } catch (err) {
-        console.log("Error getting location:", err);
+
         setError("Failed to get location: " + (err instanceof Error ? err.message : String(err)));
       }
     })();
@@ -74,7 +72,6 @@ export function useWeatherCall() {
 
       const data = await response.json();
       setWeatherAtCurrentLoc(data);
-      console.log("Fetched Weather at Current Location:", data);
     } catch (err) {
       console.error("Error fetching Weather:", err);
       setError(err instanceof Error ? err.message : "Failed to fetch weather");
@@ -102,8 +99,7 @@ export function useWeatherCall() {
       }
 
       const data = await response.json();
-      setWeatherAtInputLoc(data); 
-      console.log("Fetched Weather at Input Location:", data);
+      setWeatherAtInputLoc(data);
     } catch (err) {
       console.error("Error fetching Weather:", err);
       setError(err instanceof Error ? err.message : "Failed to fetch weather");

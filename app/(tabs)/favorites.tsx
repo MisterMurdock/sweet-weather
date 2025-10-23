@@ -12,16 +12,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-
-interface WeatherData {
-  main?: {
-    temp: number;
-  };
-  weather?: {
-    description: string;
-  }[];
-  name?: string;
-}
+import WeatherData from "../models/WeatherData";
 
 export function Favorites() {
   const { favorites, removeFavorite, effectiveTheme, convertTemperature, getTemperatureSymbol } = useSettings();
