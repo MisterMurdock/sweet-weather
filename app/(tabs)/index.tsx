@@ -10,9 +10,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 export function HomeScreen() {
   const [inputText, setInputText] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
-  const {
-    effectiveTheme,
-  } = useSettings();
+  const { effectiveTheme } = useSettings();
   const params = useLocalSearchParams();
 
   const {
@@ -84,7 +82,7 @@ export function HomeScreen() {
               opacity: 0.7,
             }}
           >
-            (add Country letters for accurate results. ex. London, UK)
+            {"(add Country letters for accurate results. ex. London, UK)"}
           </Text>
           <MyButton
             buttonText="Search city!"
@@ -99,7 +97,7 @@ export function HomeScreen() {
               <WeatherCard
                 weather={{ ...weatherAtInputLoc, title: "Searched Location" }}
               />
-              {savedMessage && (
+              {savedMessage !== "" && (
                 <Text
                   style={{
                     ...textStyle,
